@@ -18,6 +18,7 @@ def download_from_80txt(book_name):
 
     url = 'http://www.txt80.com/e/search/index.php'
 
+    # post时 通过抓包获取传递的参数
     params = {
         'tbname': 'download',
         'tempid': '1',
@@ -26,15 +27,21 @@ def download_from_80txt(book_name):
         'show': 'title,softsay,softwriter'
     }
 
+    # post方式获取html文件
     html = requests.post(url, params)
 
     # print(html.text)
     link = ''
+
+    # 设定匹配模式
     findTitle = re.compile(r'<a .*>《(.*?)》全本TXT电子书下载</a>')
     findLink = re.compile(r'<a href="(.*?)" target="_blank">')
     soup = BeautifulSoup(html.text, "html.parser")
     for item in soup.find_all('div', class_='slist'):
+
+        # BeautifulSoup获取的item必须转换成字符串 才能使用正则表达式
         item = str(item)
+        # 通过正则表达式获得数据
         title = re.findall(findTitle, item)[0]
         if title == book_name:
             link = re.findall(findLink, item)[0]
@@ -74,10 +81,3 @@ def download_from_80txt(book_name):
     return True
 
 
-
-
-# tbname: download
-# tempid: 1
-# keyboard: 人
-# show: title,softsay,softwriter
-# Submit22: 搜索

@@ -12,22 +12,8 @@ from download_from_80txt import download_from_80txt
 URLlist = []
 
 def main():
-
-    print()
-
-
-def getDate():
-    print()
-
-def saveData():
-    print()
-
-
-
-
-
-
-
+    bookname = ''
+    download_from_80txt(bookname)
 
 
 

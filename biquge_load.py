@@ -5,13 +5,18 @@
 # @Software: PyCharm
 
 
-# https://www.sbiquge.com/s.php?ie=gbk&q=
+# 项目说明： 由于该网站使用了js加载文字 导致requests无法获得到完整html源代码
+# 因此 使用了selenium自动化工具辅助完成  因而限制了程序的运行速度以及要求
+# 未来真正投入使用只能架设在服务器上
 
+
+# https://www.sbiquge.com/s.php?ie=gbk&q=
+from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup
 import re
 
-def getData(url):
+def getData(url,book_name):
     link = 'https://www.sbiquge.com' + url
     html = requests.get(link, headers)
     soup = BeautifulSoup(html.text, 'html.parser')
@@ -37,7 +42,7 @@ item = str(soup.find_all('div', class_='p10')[0])
 
 link = re.findall(findLink, item)[0]
 link = 'https://www.sbiquge.com' + link
-
+print(link)
 html = requests.get(link, headers)
 findLink = re.compile(r'<a href="(.*?)">')
 soup = BeautifulSoup(html.text, 'html.parser')
@@ -46,16 +51,26 @@ for item in soup.find_all('dd'):
     link = re.findall(findLink, item)[0]
 
     link = 'https://www.sbiquge.com' + link
-    html = requests.get(link, headers)
-    soup = BeautifulSoup(html.text, 'html.parser')
+
+    # 使用selenium工具获得完整html文件
+    browser = webdriver.Chrome()
+    browser.get(link)
+    html = browser.page_source
+
+    # html = requests.get(link, headers)
+    soup = BeautifulSoup(html, 'html.parser')
     item = soup.find('div', class_='showtxt')
     # print(html.text)
-    print(item)
-    # findText = re.compile(r'<div id="content" class="showtxt">(.*?)</div>', re.S)
-    # text = re.findall(findText, item)[0]
-    # print(text)
+    item = str(item)
+    # print(item)
+    findText = re.compile(r'<div.*?class="showtxt".*?>(.*?)</div>', re.S)
+    text = re.findall(findText, item)[0]
+    text.replace('<br/>', '')
+    print(text)
+    browser.close()
 
     break
+    #  数据储存部分未实现
 
 
 
